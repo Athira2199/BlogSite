@@ -12,20 +12,22 @@
             </form>
         </div>
     <% } %>
-    
+
     <!-- number of comments -->
     <h2 class="normal-heading-font" style="font-weight: 600; margin-top: 6vh; margin-bottom: 3vh;"> <%= comments.length %> <% if(comments.length>1 || comments.length===0) { %> comments <% } else  {%> comment <% } %></h2>
 
     <!-- display all comments section -->
     <% for(var i=0; i<comments.length; i++) { %>
-        <div class="comment"> 
+        <div class="comment">
             <h4><strong><%= comments[i].name %></strong></h4>
             <p class="post-date-font"><%= new Date(comments[i].timestamps*1000) %></p>
             <hr/>
             <%- comments[i].content %>
-            <form  action="/posts/<%=id%>/comments/<%=i%>" method="post">
-                <button class="button  del" type="submit">Delete</button>
-            </form>
+            <% if(String(comments[i].author._id) == String(currentUser._id)) { %>
+                <form  action="/posts/<%=id%>/comments/<%=comments[i]._id%>" method="post">
+                    <button class="button  del" type="submit">Delete</button>
+                </form>
+            <% } %>
         </div>
     <% } %>
 
@@ -43,7 +45,7 @@
         </div>
         <button class="button commenting" type="submit" name="publish">Post comment</button>
     </form>
-    
+
 </div>
 <script src="https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js"></script>
 
