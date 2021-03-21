@@ -1,10 +1,13 @@
 // requiring dependencies, models and middlewares
 const express = require("express");
 var _ = require("lodash");
-const auth = require("../middlewares/auth");
-const Blog = require("../models/Blog.model");
 const methodOverride=require('method-override');
 const bodyParser=require('body-parser');
+const mongoose  = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const auth = require("../middlewares/auth");
+const Blog = require("../models/Blog.model");
+
 
 const router = express.Router();
 router.use(methodOverride("_method"));
@@ -24,7 +27,7 @@ router.get(
   ],
   auth,
   function (req, res) {
-    const user = req.user;
+    const user = req.user ? req.user : {};
     let isAuthor = false;
     const requestedPostId = req.params.postId;
     Blog.findOne({ _id: requestedPostId }, function (err, post) {
@@ -68,7 +71,7 @@ router.post("/posts/:postId/comment", auth, async function (req, res) {
     } else {
       const doc = await Blog.findOne({ _id: req.params.postId });
       doc.comments.push({
-        name: loggedUser.name,
+        author: loggedUser._id,
         content: content,
         timestamps: Math.floor(Date.now() / 1000),
       });
@@ -87,28 +90,17 @@ router.post("/posts/:postId/comment", auth, async function (req, res) {
 
 // Delete comment Route
 router.post(
-  "/posts/:postId/comments/:commentNum",
+  "/posts/:postId/comments/:commentId",
   auth,
   async function (req, res) {
     const isUser = req.user ? true : false;
     const requestedPostId = req.params.postId;
-    const commentNum = req.params.commentNum;
+    const commentId = req.params.commentId;
     if (!isUser) {
       // checking if user is authenticated
       return res.status(401).redirect(req.baseUrl + "/sign-up");
     } else {
-      const foundPost = await Blog.findOne({ _id: requestedPostId });
-      foundPost.comments = foundPost.comments.sort((a, b) =>
-        a.timestamps > b.timestamps ? -1 : a.timestamps < b.timestamps ? 1 : 0
-      );
-      foundPost.comments.splice(commentNum, 1);
-      await Blog.updateOne(
-        { _id: requestedPostId },
-        { comments: foundPost.comments },
-        function (err, foundPost) {
-          if (err) console.log(err);
-        }
-      );
+      await Blog.updateOne({_id: requestedPostId},{$pull:{comments:{"_id":commentId}}})
       res.redirect(`/posts/${requestedPostId}`);
     }
   }
