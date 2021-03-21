@@ -5,7 +5,14 @@ const Schema = mongoose.Schema;
 const blogSchema = {
   blogTitle: String,
   blogContent: String,
-  comments: Array,
+  comments: [{
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    content: String,
+    timestamps:Number
+  }],
   timestamps: {
     type: Date,
     default: Date.now,
