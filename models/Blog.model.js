@@ -13,6 +13,10 @@ const blogSchema = {
     content: String,
     timestamps:Number
   }],
+  category: String,
+  photo:{
+    type: String
+  },
   timestamps: {
     type: Date,
     default: Date.now,
