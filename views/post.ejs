@@ -15,12 +15,19 @@
     
     <!-- number of comments -->
     <h2 class="normal-heading-font" style="font-weight: 600; margin-top: 6vh; margin-bottom: 3vh;"> <%= comments.length %> <% if(comments.length>1 || comments.length===0) { %> comments <% } else  {%> comment <% } %></h2>
+    
+     <div class="like-btn">
+        <div class="content">
+            <span class="like_icon"></span>
+            <div class="like"></div>
 
+        </div>
+    </div>
     <!-- display all comments section -->
     <% for(var i=0; i<comments.length; i++) { %>
         <div class="comment"> 
             <h4><strong><%= comments[i].name %></strong></h4>
-            <p class="post-date-font"><%= new Date(comments[i].timestamps*1000) %></p>
+            <p class="post-date-font"><%= moment(new Date(comments[i].timestamps*1000)).format("dddd, MMMM Do YYYY, h:mm:ss a") %></p>
             <hr/>
             <%- comments[i].content %>
             <form  action="/posts/<%=id%>/comments/<%=i%>" method="post">
@@ -46,6 +53,24 @@
     
 </div>
 <script src="https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js"></script>
+<script> 
+  $(document).ready(function(){
+    $(".content").click(function(){
+       $(".content").toggleClass("like-active")
+       $(".like").toggleClass("like-active")
+       $(".like_icon").toggleClass("like-active")
+         if($(".like").text()=='Like'){
+         
+
+        alert($(".like").text());
+         
+       }
+      
+    });
+
+   
+  })
+</script>
 
 <%- include("partials/footer") -%>
 
